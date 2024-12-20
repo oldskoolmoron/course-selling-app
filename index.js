@@ -1,6 +1,6 @@
 const express = require("express");
-const { createUserRoutes } = require(routes/routes);
-const { createCourseRoutes } = require(routes/course);
+const { createUserRoutes } = require('./routes/user');
+const { createCourseRoutes } = require('./routes/course');
 const app = express();
 
 const jsonwebtoken = require('jsonwebtoken');
