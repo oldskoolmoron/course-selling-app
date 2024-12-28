@@ -7,10 +7,11 @@ require('dotenv').config();
 
 const express = require("express");
 const { Router } = require("express");
-const { userModel } = require("../db");
+const { userModel, purchaseModel, courseModel } = require("../db");
 const { z } = require("zod");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { userMiddleware } = require("../middleware/user");
 
 const userRouter = Router();
 // userRouter.use(express.json());
@@ -71,7 +72,7 @@ userRouter.post("/signup",async (req, res)=>{
       lastName
     })
     return res.json({
-      message:"You're signup!"
+      message:"You're signed up!"
     })
   }
   catch(e){
@@ -103,6 +104,7 @@ try {
     },process.env.JWT_USER_SECRET);
     //Alternatives: Use cookies or session based authenticatio
     return res.json({
+      message:"Successfully signed in!",
       token:token
     })
   }else{
@@ -120,10 +122,30 @@ try {
 
 })
 
-userRouter.get("/purchases", (req, res)=>{
-
+userRouter.get("/purchases",userMiddleware,async (req, res) => {
+  const userId = req.userId;
+  const purchases = await purchaseModel.find({
+    userId
+  })
+  // let purchasedcourseIds= [];
+  // for(let i=0;i<purchases.length;i++){
+  //   purchasedcourseIds.push(purchases[i].courseId);
+  // }
+  // const courseData = await courseModel.find({
+  //   _id:{$in:purchasedcourseIds}
+  // })
+                        //or
+  const courseData = await courseModel.find({
+    _id:{ $in: purchases.map(x => x.courseId)}
+  })
+  res.json({
+    purchases,
+    courseData
+  })
+  // console.log(courseData);
 })
 
 module.exports = {
-  userRouter: userRouter
+  userRouter,
+  requiredBody
 }
