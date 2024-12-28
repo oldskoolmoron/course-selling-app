@@ -7,8 +7,7 @@ const { adminRouter } = require('./routes/admin');
 const app = express();
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const { userModel,adminModel,courseModel,purchaseModel } = require('./db');
-
+app.use(express.json());
 mongoose.connect(process.env.MONGODB_URI, {})
 .then(()=>{
   console.log("connected to MongoDB");
@@ -19,9 +18,7 @@ mongoose.connect(process.env.MONGODB_URI, {})
 app.use("/user", userRouter);
 app.use("/course", courseRouter);
 app.use("/admin", adminRouter);
-
   
-
 app.listen(3000, ()=>{
   console.log("server is running on port 3000")
 })
